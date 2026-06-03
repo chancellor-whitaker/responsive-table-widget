@@ -5,14 +5,10 @@ import "./responsive-table.css";
 const roots = new Map();
 
 function getElement(target) {
-  if (typeof target === "string") {
-    return document.querySelector(target);
-  }
-
-  return target;
+  return typeof target === "string" ? document.querySelector(target) : target;
 }
 
-function mount(target) {
+function mount(target, options = {}) {
   const element = getElement(target);
 
   if (!element) {
@@ -27,12 +23,11 @@ function mount(target) {
     roots.set(element, root);
   }
 
-  root.render(<TableWidgetApp />);
+  root.render(<TableWidgetApp {...options} />);
 }
 
 function unmount(target) {
   const element = getElement(target);
-
   if (!element) return;
 
   const root = roots.get(element);

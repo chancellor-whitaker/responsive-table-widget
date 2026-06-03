@@ -9,12 +9,41 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <!-- <div id="responsive-table"></div>
+
+    <!--? test pulling data -->
+    <!--? test mount options -->
+    <!-- test url params -->
+    <!-- can generate embed markup for user with selected options -->
+
+    <div id="responsive-table"></div>
 
     <script src="https://chancellor-whitaker.github.io/responsive-table-widget/responsive-table-widget.iife.js"></script>
 
     <script>
-      ResponsiveTableWidget.mount("#responsive-table");
-    </script> -->
+      ResponsiveTableWidget.mount("#responsive-table", {
+        dataUrl:
+          "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data",
+
+        transformData(rawData) {
+          const rows = rawData.Degrees;
+
+          const snakeToTitle = (str) =>
+            str
+              .split("_")
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+              )
+              .join(" ");
+
+          const columns = Object.keys(rows[0]).map((key) => ({
+            key,
+            label: snakeToTitle(key),
+          }));
+
+          return { columns, rows };
+        },
+      });
+    </script>
   </body>
 </html>
