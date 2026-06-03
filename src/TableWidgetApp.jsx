@@ -1,8 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ResponsiveTable from "./ResponsiveTable.jsx";
 import { columns as defaultColumns, data as defaultRows } from "./tableData.js";
 
+function getWidgetSettings() {
+  const params = new URLSearchParams(window.location.search);
+
+  const theme = params.get("theme") === "dark" ? "dark" : "light";
+  const compact = params.get("compact") === "true";
+
+  return {
+    theme,
+    compact,
+  };
+}
+
 export default function TableWidgetApp({ dataUrl, transformData }) {
+  const settings = useMemo(() => getWidgetSettings(), []);
+
   const [columns, setColumns] = useState(defaultColumns);
   const [rows, setRows] = useState(defaultRows);
   const [loading, setLoading] = useState(Boolean(dataUrl));
@@ -50,16 +64,24 @@ export default function TableWidgetApp({ dataUrl, transformData }) {
     };
   }, [dataUrl, transformData]);
 
+  const widgetClassName = [
+    "rt-widget",
+    `rt-theme-${settings.theme}`,
+    settings.compact ? "rt-compact" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   if (loading) {
-    return <div className="rt-widget">Loading table...</div>;
+    return <div className={widgetClassName}>Loading table...</div>;
   }
 
   if (error) {
-    return <div className="rt-widget">Unable to load table data.</div>;
+    return <div className={widgetClassName}>Unable to load table data.</div>;
   }
 
   return (
-    <div className="rt-widget">
+    <div className={widgetClassName}>
       <ResponsiveTable columns={columns} data={rows} />
     </div>
   );
