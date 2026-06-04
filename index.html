@@ -5,16 +5,20 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>responsive-table-widget</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- embed code ↓ -->
+    <!-- <h1>Responsive table</h1>
     <div id="responsive-table"></div>
-
-    <script src="/docs/responsive-table-widget.iife.js?v=2"></script>
-
+    <script src="https://chancellor-whitaker.github.io/responsive-table-widget/responsive-table-widget.iife.js?v=2"></script>
     <script>
       ResponsiveTableWidget.mount("#responsive-table", {
         dataUrl:
@@ -40,17 +44,12 @@
           return { columns, rows };
         },
       });
-    </script>
-    <!-- embed code ↑ -->
+    </script> -->
 
-    <!-- embed code ↓ -->
     <div id="example-widget"></div>
-
-    <script src="/docs/example-widget.iife.js?v=2"></script>
-
+    <script src="https://chancellor-whitaker.github.io/responsive-table-widget/example-widget.iife.js?v=2"></script>
     <script>
       ExampleWidget.mount("#example-widget");
     </script>
-    <!-- embed code ↑ -->
   </body>
 </html>
