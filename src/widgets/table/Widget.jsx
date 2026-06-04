@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import ResponsiveTable from "./ResponsiveTable.jsx";
-import { columns as defaultColumns, data as defaultRows } from "./tableData.js";
+import ResponsiveTable from "./lib/ResponsiveTable.jsx";
+import {
+  columns as defaultColumns,
+  data as defaultRows,
+} from "./lib/tableData.js";
 
 function getWidgetSettings() {
   const params = new URLSearchParams(window.location.search);
@@ -14,7 +17,7 @@ function getWidgetSettings() {
   };
 }
 
-export default function TableWidgetApp({ dataUrl, transformData }) {
+export default function Widget({ dataUrl, transformData }) {
   const settings = useMemo(() => getWidgetSettings(), []);
 
   const [columns, setColumns] = useState(defaultColumns);

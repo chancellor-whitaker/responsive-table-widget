@@ -1,13 +1,5 @@
-// import TableWidgetApp from "./TableWidgetApp";
+// import Component from "./widgets/example";
 
 export default function App() {
-  return (
-    <>
-      <h1>React app</h1>
-    </>
-  );
+  return <>{/* <Component></Component> */}</>;
 }
-
-// render
-// current virtual dom vs next virtual dom
-// diff found? update parent of diff

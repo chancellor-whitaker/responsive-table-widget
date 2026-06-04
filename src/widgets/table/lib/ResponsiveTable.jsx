@@ -1,5 +1,3 @@
-import "./responsive-table.css";
-
 export default function ResponsiveTable({ columns, data }) {
   return (
     <div className="rt-wrapper">

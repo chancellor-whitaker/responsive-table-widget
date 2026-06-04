@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
+import { widgetMeta } from "./src/widget.meta.js";
+
 export default defineConfig({
   plugins: [react(), cssInjectedByJsPlugin()],
   base: "",
@@ -18,10 +20,11 @@ export default defineConfig({
 
   build: {
     outDir: "docs",
+    emptyOutDir: false,
     lib: {
       entry: "src/widget.jsx",
-      name: "ResponsiveTableWidget",
-      fileName: "responsive-table-widget",
+      name: widgetMeta.name,
+      fileName: widgetMeta.fileName,
       formats: ["iife"],
     },
   },

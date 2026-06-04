@@ -1,6 +1,5 @@
 import { createRoot } from "react-dom/client";
-import TableWidgetApp from "./TableWidgetApp.jsx";
-import "./responsive-table.css";
+import { widgetRuntime } from "./widget.runtime";
 
 const roots = new Map();
 
@@ -12,7 +11,7 @@ function mount(target, options = {}) {
   const element = getElement(target);
 
   if (!element) {
-    console.error("ResponsiveTableWidget: target element not found.");
+    console.error(`${widgetRuntime.name}: target element not found.`);
     return;
   }
 
@@ -23,7 +22,9 @@ function mount(target, options = {}) {
     roots.set(element, root);
   }
 
-  root.render(<TableWidgetApp {...options} />);
+  const Component = widgetRuntime.component;
+
+  root.render(<Component {...options} />);
 }
 
 function unmount(target) {
@@ -38,7 +39,7 @@ function unmount(target) {
   }
 }
 
-window.ResponsiveTableWidget = {
+window[widgetRuntime.name] = {
   mount,
   unmount,
 };
