@@ -1,5 +1,6 @@
-import useData from "./lib/useData";
-import Table from "./lib/Table";
+/* src/widgets/example/Widget.jsx */
+
+import { useEffect, useState, Fragment } from "react";
 
 const keyToLabel = { kpi: "Student Performance Indicator", p_title: "Program" };
 
@@ -47,10 +48,46 @@ const kpiDescriptions = {
   "Degrees→degrees": "Degrees Awarded",
 };
 
-export default function Widget({ isFlipped: isFlippedProp, title }) {
-  const response = useData(
-    "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data",
-  );
+const defaultDataUrl =
+  "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data";
+
+export default function Widget({
+  fontFamily = "Fira Sans, system-ui, sans-serif",
+  primaryColor = "rgb(134, 31, 65)",
+  isFlipped: isFlippedProp = false,
+  dataUrl = defaultDataUrl,
+  notesMode = "expanded",
+  linkColor = "#009681",
+  stickyHeader = false,
+  stripedRows = false,
+  theme = "default",
+  hoverRows = false,
+  showNotes = true,
+  compact = false,
+  maxHeight = "",
+  refreshMs = 0,
+  title = "",
+}) {
+  const widgetClassName = [
+    "example-widget",
+    `example-widget--${theme}`,
+    compact ? "example-widget--compact" : "",
+    stripedRows ? "example-widget--striped" : "",
+    hoverRows ? "example-widget--hover" : "",
+    stickyHeader ? "example-widget--sticky-header" : "",
+    maxHeight ? "example-widget--scrollable" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const widgetStyle = {
+    "--example-primary-color": primaryColor,
+    "--example-font-family": fontFamily,
+    "--example-link-color": linkColor,
+    "--example-max-height": maxHeight,
+  };
+
+  const response = useData(dataUrl, refreshMs);
 
   const data = response ? response : {};
 
@@ -221,53 +258,65 @@ export default function Widget({ isFlipped: isFlippedProp, title }) {
 
   console.log("data", data);
 
-  return (
+  const notesContent = (
     <>
+      <li>
+        <strong>N/A =</strong> Fewer than five graduates during the reporting
+        period
+      </li>
+      <li>
+        <strong>
+          Tuition expenses for program completion (AY {century - 1}
+          {(typeof tuitionData.year === "string"
+            ? tuitionData.year
+            : ""
+          ).substring(0, 2)}
+          –{century - 1}
+          {(typeof tuitionData.year === "string"
+            ? tuitionData.year
+            : ""
+          ).substring(2)}
+          ):
+        </strong>
+        &nbsp;120 credit hours at the current tuition rate of{" "}
+        {formatterUSD.format(tuitionData.ug_max_charge)} per semester across 8
+        semesters equals {formatterUSD.format(tuitionData.ug_max_charge * 8)}.{" "}
+        <a href={tuitionData.website}>
+          See Undergraduate Cost of Attendance page
+        </a>
+        &nbsp;for details.
+      </li>
+      <li>
+        <strong>Availability of awards and scholarships:</strong>
+        &nbsp;Information about all scholarships and applications is available
+        on the{" "}
+        <a href={scholarData.website}>
+          Eastern Kentucky University Scholarships page
+        </a>
+        .
+      </li>
+      {notes.map(([a, b]) => (
+        <li key={a}>
+          <strong>{a}:</strong> {b}
+        </li>
+      ))}
+    </>
+  );
+
+  return (
+    <div className={widgetClassName} style={widgetStyle}>
       <Table
         below={
-          <ul>
-            <li>
-              <strong>N/A =</strong> Fewer than five graduates during the
-              reporting period
-            </li>
-            <li>
-              <strong>
-                Tuition expenses for program completion (AY {century - 1}
-                {(typeof tuitionData.year === "string"
-                  ? tuitionData.year
-                  : ""
-                ).substring(0, 2)}
-                –{century - 1}
-                {(typeof tuitionData.year === "string"
-                  ? tuitionData.year
-                  : ""
-                ).substring(2)}
-                ):
-              </strong>
-              &nbsp;120 credit hours at the current tuition rate of{" "}
-              {formatterUSD.format(tuitionData.ug_max_charge)} per semester
-              across 8 semesters equals{" "}
-              {formatterUSD.format(tuitionData.ug_max_charge * 8)}.{" "}
-              <a href={tuitionData.website}>
-                See Undergraduate Cost of Attendance page
-              </a>
-              &nbsp;for details.
-            </li>
-            <li>
-              <strong>Availability of awards and scholarships:</strong>
-              &nbsp;Information about all scholarships and applications is
-              available on the{" "}
-              <a href={scholarData.website}>
-                Eastern Kentucky University Scholarships page
-              </a>
-              .
-            </li>
-            {notes.map(([a, b]) => (
-              <li key={a}>
-                <strong>{a}:</strong> {b}
-              </li>
-            ))}
-          </ul>
+          showNotes && notesMode !== "hidden" ? (
+            notesMode === "collapsed" ? (
+              <details>
+                <summary>Notes</summary>
+                <ul>{notesContent}</ul>
+              </details>
+            ) : (
+              <ul>{notesContent}</ul>
+            )
+          ) : null
         }
         valueFormatter={valueFormatter}
         tableAccessor={tableAccessor}
@@ -275,7 +324,156 @@ export default function Widget({ isFlipped: isFlippedProp, title }) {
         data={tableRows}
         title={title}
       ></Table>
-      {/* <style jsx>{styles}</style> */}
-    </>
+    </div>
   );
 }
+
+function Table({
+  below = (
+    <ul>
+      <li>
+        <strong>N/A =</strong> Fewer than five graduates during the reporting
+        period
+      </li>
+      <li>
+        <strong>Tuition expenses for program completion (AY 2025–2026):</strong>
+        &nbsp;120 credit hours at the current tuition rate of $201.90 per hour
+        equals $24,228.{" "}
+        <a href="https://www.wsc.edu/cost/cost-of-attendance">
+          See Undergraduate Cost of Attendance page
+        </a>
+        &nbsp;for details.
+      </li>
+      <li>
+        <strong>Availability of awards and scholarships:</strong>
+        &nbsp;Information about all scholarships and applications is available
+        on the{" "}
+        <a href="https://www.wsc.edu/scholarships">
+          Wayne State College Scholarships page
+        </a>
+        .
+      </li>
+    </ul>
+  ),
+  valueFormatter = ({ value }) => value,
+  tableAccessor = (obj) => obj,
+  columns: cols,
+  title = "",
+  data: rows,
+}) {
+  const { columns, data } = tableAccessor({ columns: cols, data: rows });
+
+  console.log("table", data, columns);
+  return (
+    <div className="page-content">
+      <div className="editor d-flex flex-column gap-3">
+        {title && <h3>{title}</h3>}
+        <div
+          className="table-wrapper"
+          aria-labelledby={86019}
+          role="region"
+          tabIndex={0}
+        >
+          <table style={{ width: "100%" }}>
+            {/* <caption id={86019}>
+              <p style={{ textAlign: "left" }}>
+                The following job placement data represents the academic period
+                of Dec. 2023 - Aug. 2024, unless otherwise stated.
+              </p>
+            </caption> */}
+            <thead>
+              <tr>
+                {columns.map((column) => (
+                  <th
+                    style={{ textAlign: "center" }}
+                    key={column.key}
+                    scope="col"
+                  >
+                    {column.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {columns.map((column, colIndex) => (
+                    <Fragment key={column.key}>
+                      {colIndex === 0 ? (
+                        <td data-label={column.label}>
+                          <p>
+                            {valueFormatter({
+                              value: row[column.key],
+                              column,
+                              row,
+                            })}
+                          </p>
+                        </td>
+                      ) : (
+                        <td
+                          style={{ textAlign: "center" }}
+                          data-label={column.label}
+                        >
+                          {valueFormatter({
+                            value: row[column.key],
+                            column,
+                            row,
+                          })}
+                        </td>
+                      )}
+                    </Fragment>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {below && below}
+      </div>
+    </div>
+  );
+}
+
+function useData(url, refreshMs = 0) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    if (!url) return;
+
+    let ignore = false;
+
+    async function load() {
+      const response = await fetch(url);
+      const json = await response.json();
+
+      if (!ignore) {
+        setData(json);
+      }
+    }
+
+    load();
+
+    if (!refreshMs) {
+      return () => {
+        ignore = true;
+      };
+    }
+
+    const intervalId = setInterval(load, refreshMs);
+
+    return () => {
+      ignore = true;
+      clearInterval(intervalId);
+    };
+  }, [url, refreshMs]);
+
+  return data;
+}
+
+/*
+
+
+
+
+
+*/
