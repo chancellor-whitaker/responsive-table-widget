@@ -1,31 +1,31 @@
-import { defineConfig } from "vite";
+/* vite.config.js */
+
+// import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import react from "@vitejs/plugin-react";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
+import { defineConfig } from "vite";
 
 import { widgetMeta } from "./src/widget.meta.js";
 
 export default defineConfig({
-  plugins: [react(), cssInjectedByJsPlugin()],
-  base: "",
-
+  build: {
+    lib: {
+      fileName: widgetMeta.fileName,
+      entry: "src/widget.jsx",
+      name: widgetMeta.name,
+      formats: ["iife"],
+    },
+    emptyOutDir: false,
+    outDir: "docs",
+  },
   define: {
-    "process.env.NODE_ENV": JSON.stringify("production"),
-    "process.env": {},
     process: {
       env: {
         NODE_ENV: "production",
       },
     },
+    "process.env.NODE_ENV": JSON.stringify("production"),
+    "process.env": {},
   },
-
-  build: {
-    outDir: "docs",
-    emptyOutDir: false,
-    lib: {
-      entry: "src/widget.jsx",
-      name: widgetMeta.name,
-      fileName: widgetMeta.fileName,
-      formats: ["iife"],
-    },
-  },
+  plugins: [react()],
+  base: "",
 });

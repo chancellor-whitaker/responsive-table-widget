@@ -1,11 +1,6 @@
 import { Fragment } from "react";
 
 export default function Table({
-  title = "",
-  columns: cols,
-  data: rows,
-  tableAccessor = (obj) => obj,
-  valueFormatter = ({ value }) => value,
   below = (
     <ul>
       <li>
@@ -32,18 +27,23 @@ export default function Table({
       </li>
     </ul>
   ),
+  valueFormatter = ({ value }) => value,
+  tableAccessor = (obj) => obj,
+  columns: cols,
+  title = "",
+  data: rows,
 }) {
-  const { data, columns } = tableAccessor({ data: rows, columns: cols });
+  const { columns, data } = tableAccessor({ columns: cols, data: rows });
 
   console.log("table", data, columns);
   return (
     <div className="page-content">
-      <div className="editor">
+      <div className="editor d-flex flex-column gap-3">
         {title && <h3>{title}</h3>}
         <div
           className="table-wrapper"
-          role="region"
           aria-labelledby={86019}
+          role="region"
           tabIndex={0}
         >
           <table style={{ width: "100%" }}>
@@ -101,7 +101,7 @@ export default function Table({
           </table>
         </div>
         {below}
-        <p>&nbsp;</p>
+        {/* <p>&nbsp;</p> */}
       </div>
     </div>
   );

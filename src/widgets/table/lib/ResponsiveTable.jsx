@@ -14,7 +14,7 @@ export default function ResponsiveTable({ columns, data }) {
           {data.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {columns.map((column) => (
-                <td key={column.key} data-label={column.label}>
+                <td data-label={column.label} key={column.key}>
                   {row[column.key]}
                 </td>
               ))}

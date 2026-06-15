@@ -1,4 +1,9 @@
-import Component from "./Widget.jsx";
-import "./widget.css";
+import bootstrapCss from "bootstrap/dist/css/bootstrap.min.css?inline";
 
-export default Component;
+import widgetCss from "./widget.css?inline";
+import Component from "./Widget.jsx";
+
+export default {
+  css: [bootstrapCss, widgetCss].join("\n"),
+  component: Component,
+};

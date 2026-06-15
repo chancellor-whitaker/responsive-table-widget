@@ -1,4 +1,6 @@
+/* src/widget.meta.js */
+
 export const widgetMeta = {
-  name: "ExampleWidget",
   fileName: "example-widget",
+  name: "ExampleWidget",
 };

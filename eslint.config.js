@@ -1,21 +1,23 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import { globalIgnores, defineConfig } from "eslint/config";
+import perfectionist from "eslint-plugin-perfectionist";
+import reactRefresh from "eslint-plugin-react-refresh";
+import reactHooks from "eslint-plugin-react-hooks";
+import globals from "globals";
+import js from "@eslint/js";
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  perfectionist.configs["recommended-line-length"],
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
     languageOptions: {
-      globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: globals.browser,
     },
+    files: ["**/*.{js,jsx}"],
   },
-])
+]);

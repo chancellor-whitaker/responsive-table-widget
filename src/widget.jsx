@@ -1,11 +1,8 @@
 import { createRoot } from "react-dom/client";
+
 import { widgetRuntime } from "./widget.runtime";
 
 const roots = new Map();
-
-function getElement(target) {
-  return typeof target === "string" ? document.querySelector(target) : target;
-}
 
 function mount(target, options = {}) {
   const element = getElement(target);
@@ -15,31 +12,47 @@ function mount(target, options = {}) {
     return;
   }
 
-  let root = roots.get(element);
+  let record = roots.get(element);
 
-  if (!root) {
-    root = createRoot(element);
-    roots.set(element, root);
+  if (!record) {
+    const shadowRoot = element.attachShadow({ mode: "open" });
+
+    const style = document.createElement("style");
+    style.textContent = widgetRuntime.css;
+    shadowRoot.appendChild(style);
+
+    const rootElement = document.createElement("div");
+    shadowRoot.appendChild(rootElement);
+
+    const root = createRoot(rootElement);
+
+    record = { rootElement, shadowRoot, root };
+    roots.set(element, record);
   }
 
   const Component = widgetRuntime.component;
 
-  root.render(<Component {...options} />);
+  record.root.render(<Component {...options} />);
 }
 
 function unmount(target) {
   const element = getElement(target);
   if (!element) return;
 
-  const root = roots.get(element);
+  const record = roots.get(element);
 
-  if (root) {
-    root.unmount();
+  if (record) {
+    record.root.unmount();
+    element.shadowRoot.innerHTML = "";
     roots.delete(element);
   }
 }
 
+function getElement(target) {
+  return typeof target === "string" ? document.querySelector(target) : target;
+}
+
 window[widgetRuntime.name] = {
-  mount,
   unmount,
+  mount,
 };

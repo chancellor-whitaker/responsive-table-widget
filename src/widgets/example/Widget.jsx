@@ -1,5 +1,3 @@
-// import Component from "./widgets/example";
-
 import useData from "./lib/useData";
 import Table from "./lib/Table";
 
@@ -11,8 +9,8 @@ const century = Math.ceil(currentYear / 100);
 
 const getColumns = (rows, labels = {}) => {
   return Object.keys(rows.length > 0 ? rows[0] : {}).map((key) => ({
-    key,
     label: key in labels ? labels[key] : key,
+    key,
   }));
 };
 
@@ -41,15 +39,15 @@ const formatterPercent = new Intl.NumberFormat("default", {
 });
 
 const kpiDescriptions = {
-  "Degrees→Final_GPA": "Mean GPA - Graduating Class",
-  "Degrees→Final_Hours": "Mean Hours - Graduating Class",
-  "Degrees→degrees": "Degrees Awarded",
   "Degrees→years_to_grad": "Average Years to Complete the Degree",
+  "Degrees→Final_Hours": "Mean Hours - Graduating Class",
+  "Degrees→Final_GPA": "Mean GPA - Graduating Class",
   "Grad Rates→_6yr_": "6 Year Graduation Rate",
   "Retention Rates→retained": "Retention Rate",
+  "Degrees→degrees": "Degrees Awarded",
 };
 
-export default function Widget({ title }) {
+export default function Widget({ isFlipped: isFlippedProp, title }) {
   const response = useData(
     "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data",
   );
@@ -133,7 +131,7 @@ export default function Widget({ title }) {
 
   const flippedRowData = flipRowData();
 
-  const tableRows = flippedRowData;
+  const tableRows = isFlippedProp ? flippedRowData : rowData;
 
   const isFlipped = tableRows === flippedRowData;
 
@@ -149,7 +147,7 @@ export default function Widget({ title }) {
     );
   };
 
-  const valueFormatter = ({ value, row, column }) => {
+  const valueFormatter = ({ column, value, row }) => {
     if (isFlipped && column.key === "kpi") {
       return value in kpiDescriptions ? kpiDescriptions[value] : value;
     }
@@ -193,31 +191,31 @@ export default function Widget({ title }) {
   // come up with own desc if needed
   // use time_frame descriptions as notes
 
-  const tableAccessor = ({ data, columns }) => {
+  const tableAccessor = ({ columns, data }) => {
     if (!isFlipped) {
       return {
-        data,
         columns: columns.filter(({ key }) => {
           const str = key.split("→")[key.split("→").length - 1];
           return (
-            !["time_frame", "updated_date"].includes(str.toLowerCase()) &&
+            !["updated_date", "time_frame"].includes(str.toLowerCase()) &&
             !str.includes("program") &&
             !str.includes("cohort")
           );
         }),
+        data,
       };
     }
 
     return {
-      columns,
       data: data.filter(({ kpi }) => {
         const str = kpi.split("→")[kpi.split("→").length - 1];
         return (
-          !["time_frame", "updated_date"].includes(str.toLowerCase()) &&
+          !["updated_date", "time_frame"].includes(str.toLowerCase()) &&
           !str.includes("program") &&
           !str.includes("cohort")
         );
       }),
+      columns,
     };
   };
 
@@ -226,11 +224,6 @@ export default function Widget({ title }) {
   return (
     <>
       <Table
-        title={title}
-        valueFormatter={valueFormatter}
-        data={tableRows}
-        columns={columns}
-        tableAccessor={tableAccessor}
         below={
           <ul>
             <li>
@@ -276,7 +269,13 @@ export default function Widget({ title }) {
             ))}
           </ul>
         }
+        valueFormatter={valueFormatter}
+        tableAccessor={tableAccessor}
+        columns={columns}
+        data={tableRows}
+        title={title}
       ></Table>
+      {/* <style jsx>{styles}</style> */}
     </>
   );
 }

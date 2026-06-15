@@ -1,23 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import ResponsiveTable from "./lib/ResponsiveTable.jsx";
+/* src/widgets/table/Widget.jsx */
+
+import { useEffect, useState, useMemo } from "react";
+
 import {
   columns as defaultColumns,
   data as defaultRows,
 } from "./lib/tableData.js";
+import ResponsiveTable from "./lib/ResponsiveTable.jsx";
 
-function getWidgetSettings() {
-  const params = new URLSearchParams(window.location.search);
-
-  const theme = params.get("theme") === "dark" ? "dark" : "light";
-  const compact = params.get("compact") === "true";
-
-  return {
-    theme,
-    compact,
-  };
-}
-
-export default function Widget({ dataUrl, transformData }) {
+export default function Widget({ transformData, dataUrl }) {
   const settings = useMemo(() => getWidgetSettings(), []);
 
   const [columns, setColumns] = useState(defaultColumns);
@@ -88,4 +79,16 @@ export default function Widget({ dataUrl, transformData }) {
       <ResponsiveTable columns={columns} data={rows} />
     </div>
   );
+}
+
+function getWidgetSettings() {
+  const params = new URLSearchParams(window.location.search);
+
+  const theme = params.get("theme") === "dark" ? "dark" : "light";
+  const compact = params.get("compact") === "true";
+
+  return {
+    compact,
+    theme,
+  };
 }

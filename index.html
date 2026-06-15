@@ -5,20 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>responsive-table-widget</title>
-    <link
+    <!-- <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
       crossorigin="anonymous"
-    />
+    /> -->
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="bg-body-tertiary">
+    <main class="container">
+      <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <div id="root"></div>
+      </div>
+      <hr />
+      <div class="my-3 p-3 bg-body rounded shadow-sm">
+        <div id="example-widget"></div>
+        <!-- <div id="responsive-table"></div> -->
+      </div>
+    </main>
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- <h1>Responsive table</h1>
-    <div id="responsive-table"></div>
-    <script src="https://chancellor-whitaker.github.io/responsive-table-widget/responsive-table-widget.iife.js?v=2"></script>
+    <!-- <script src="docs/responsive-table-widget.iife.js?v=10"></script>
     <script>
       ResponsiveTableWidget.mount("#responsive-table", {
         dataUrl:
@@ -45,12 +52,15 @@
         },
       });
     </script> -->
-    <hr />
 
-    <div id="example-widget"></div>
-    <script src="docs/example-widget.iife.js?v=1"></script>
+    <script src="docs/example-widget.iife.js?v=110"></script>
     <script>
-      ExampleWidget.mount("#example-widget", { title: "Under react app" });
+      ExampleWidget.mount("#example-widget", {
+        // font size
+        // header row color
+        title: "Under react app",
+        isFlipped: false,
+      });
     </script>
   </body>
 </html>
