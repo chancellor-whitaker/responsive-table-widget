@@ -35,6 +35,12 @@
   font-size: 0.8125rem;
 }
 
+.example-widget.example-widget--compact .page-content table:not([class]) th,
+.example-widget.example-widget--compact .page-content table:not([class]) td {
+  padding: 0.5rem;
+  font-size: 0.8125rem;
+}
+
 .example-widget--striped tbody tr:nth-child(even) {
   background: #f7f7f7;
 }
@@ -108,21 +114,6 @@ table {
 td,
 th {
   padding: 0;
-}
-h3 {
-  font-size: 1.875rem;
-  line-height: 1.5;
-  margin: 1rem 0 0.75rem;
-}
-@media screen and (max-width: 759px) {
-  h3 {
-    font-size: 1.75rem;
-  }
-}
-.page-content table:not([class]) th,
-.page-content table:not([class]) td {
-  font-size: 0.875rem;
-  margin: 0.75rem 0 0;
 }
 h3 {
   color: #000;

@@ -2,6 +2,9 @@
 
 import { useEffect, useState, Fragment } from "react";
 
+// import "./widget.css";
+import defaultOptions from "./lib/defaultOptions";
+
 const keyToLabel = { kpi: "Student Performance Indicator", p_title: "Program" };
 
 const today = new Date();
@@ -48,25 +51,22 @@ const kpiDescriptions = {
   "Degrees→degrees": "Degrees Awarded",
 };
 
-const defaultDataUrl =
-  "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data";
-
 export default function Widget({
-  fontFamily = "Fira Sans, system-ui, sans-serif",
-  primaryColor = "rgb(134, 31, 65)",
-  isFlipped: isFlippedProp = false,
-  dataUrl = defaultDataUrl,
-  notesMode = "expanded",
-  linkColor = "#009681",
-  stickyHeader = false,
-  stripedRows = false,
-  theme = "default",
-  hoverRows = false,
-  showNotes = true,
-  compact = false,
-  maxHeight = "",
-  refreshMs = 0,
-  title = "",
+  primaryColor = defaultOptions.primaryColor,
+  stickyHeader = defaultOptions.stickyHeader,
+  stripedRows = defaultOptions.stripedRows,
+  fontFamily = defaultOptions.fontFamily,
+  notesMode = defaultOptions.notesMode,
+  linkColor = defaultOptions.linkColor,
+  hoverRows = defaultOptions.hoverRows,
+  showNotes = defaultOptions.showNotes,
+  maxHeight = defaultOptions.maxHeight,
+  refreshMs = defaultOptions.refreshMs,
+  transpose = defaultOptions.transpose,
+  dataUrl = defaultOptions.dataUrl,
+  compact = defaultOptions.compact,
+  theme = defaultOptions.theme,
+  title = defaultOptions.title,
 }) {
   const widgetClassName = [
     "example-widget",
@@ -168,7 +168,7 @@ export default function Widget({
 
   const flippedRowData = flipRowData();
 
-  const tableRows = isFlippedProp ? flippedRowData : rowData;
+  const tableRows = transpose ? flippedRowData : rowData;
 
   const isFlipped = tableRows === flippedRowData;
 
@@ -255,8 +255,6 @@ export default function Widget({
       columns,
     };
   };
-
-  console.log("data", data);
 
   const notesContent = (
     <>
@@ -363,7 +361,6 @@ function Table({
 }) {
   const { columns, data } = tableAccessor({ columns: cols, data: rows });
 
-  console.log("table", data, columns);
   return (
     <div className="page-content">
       <div className="editor d-flex flex-column gap-3">
