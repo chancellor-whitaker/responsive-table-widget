@@ -1,1 +1,4 @@
-
+.form-control,
+.form-check-input {
+  --bs-border-color: #adb5bd;
+}

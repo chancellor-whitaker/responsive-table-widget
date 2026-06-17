@@ -1,10 +1,10 @@
 export default [
-  { name: "stripedRows", type: "checkbox" },
-  { name: "primaryColor", type: "color" },
-  { name: "hoverRows", type: "checkbox" },
-  { name: "showNotes", type: "checkbox" },
-  { name: "transpose", type: "checkbox" },
-  { type: "checkbox", name: "compact" },
-  { name: "linkColor", type: "color" },
-  { name: "title", type: "text" },
+  { label: "Title", name: "title", type: "text" },
+  { label: "Primary color", name: "primaryColor", type: "color" },
+  { label: "Link color", name: "linkColor", type: "color" },
+  { label: "Striped rows", name: "stripedRows", type: "checkbox" },
+  { label: "Hover rows", name: "hoverRows", type: "checkbox" },
+  { label: "Show notes", name: "showNotes", type: "checkbox" },
+  { label: "Transpose", name: "transpose", type: "checkbox" },
+  { label: "Compact", type: "checkbox", name: "compact" },
 ];

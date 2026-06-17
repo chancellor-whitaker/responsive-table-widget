@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 
-// import "./widget.css";
+import "./widget.css";
 import defaultOptions from "./lib/defaultOptions";
 
 const keyToLabel = { kpi: "Student Performance Indicator", p_title: "Program" };
