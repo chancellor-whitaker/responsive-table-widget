@@ -1,15 +1,18 @@
 import { useDeferredValue, useState, useRef } from "react";
 
-import defaultOptions from "./widgets/example/lib/defaultOptions";
+import defaultOptions from "./widgets/accreditation/lib/defaultOptions";
 import { RemoteComponent } from "./components/RemoteComponent";
+import inputDefs from "./widgets/accreditation/lib/inputDefs";
 import { useClickOutside } from "./hooks/useClickOutside";
 import formatHtmlString from "./helpers/formatHtmlString";
-import inputDefs from "./widgets/example/lib/inputDefs";
+import Widget from "./widgets/accreditation/Widget";
 import FormControl from "./components/FormControl";
 import FormCheck from "./components/FormCheck";
-import Widget from "./widgets/example/Widget";
 import useCopied from "./hooks/useCopied";
 import Modal from "./components/Modal";
+
+// hover question mark to explain page
+// change "accreditation" verbiage
 
 export default function App() {
   const [isModalActive, setIsModalActive] = useState();
@@ -23,8 +26,10 @@ export default function App() {
       inputDefs.find(({ name }) => name === n),
     ),
   );
-
-  const markup = `<div id="example-widget"></div><script src="https://chancellor-whitaker.github.io/responsive-table-widget//example-widget.iife.js?v=50000000"></script><script>ExampleWidget.mount("#example-widget", ${JSON.stringify(mountOptions)});</script>`;
+  // hover question mark to explain page
+  // change "accreditation" verbiage
+  // id={`ier-${uniqueId}`}
+  const markup = `<div id="accreditation-widget"></div><script src="https://chancellor-whitaker.github.io/responsive-table-widget/accreditation-widget.iife.js?v=1"></script><script>AccreditationWidget.mount("#accreditation-widget", ${JSON.stringify(mountOptions)});</script>`;
 
   const onChange = ({ target: { checked, value, type, name } }) =>
     setOptions((state) =>
@@ -67,7 +72,7 @@ export default function App() {
       >
         <Widget {...deferredOptions}></Widget>
         {isModalActive && (
-          <Modal className="shadow opacity-75" ref={modalRef}>
+          <Modal className="shadow" ref={modalRef}>
             <Modal.Header>
               <Modal.Header.Title>Build embed code</Modal.Header.Title>
               <Modal.Header.Close onClick={toggleModal}></Modal.Header.Close>

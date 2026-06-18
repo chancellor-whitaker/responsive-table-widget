@@ -1,4 +1,4 @@
-/* src/widgets/example/index.js */
+/* src/widgets/accreditation/index.js */
 
 import bootstrapCss from "bootstrap/dist/css/bootstrap.min.css?inline";
 
