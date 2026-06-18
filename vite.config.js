@@ -1,6 +1,5 @@
 /* vite.config.js */
 
-// import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 

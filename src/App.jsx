@@ -1,11 +1,21 @@
-import { useDeferredValue, useState, useId } from "react";
+import { useDeferredValue, useState, useRef } from "react";
 
 import defaultOptions from "./widgets/example/lib/defaultOptions";
+import { RemoteComponent } from "./components/RemoteComponent";
+import { useClickOutside } from "./hooks/useClickOutside";
+import formatHtmlString from "./helpers/formatHtmlString";
 import inputDefs from "./widgets/example/lib/inputDefs";
+import FormControl from "./components/FormControl";
+import FormCheck from "./components/FormCheck";
 import Widget from "./widgets/example/Widget";
-import Modal from "./Modal";
+import useCopied from "./hooks/useCopied";
+import Modal from "./components/Modal";
 
 export default function App() {
+  const [isModalActive, setIsModalActive] = useState();
+
+  const toggleModal = () => setIsModalActive((b) => !b);
+
   const [options, setOptions] = useState(defaultOptions);
 
   const mountOptions = Object.fromEntries(
@@ -29,131 +39,84 @@ export default function App() {
 
   const deferredOptions = useDeferredValue(options);
 
-  const copyMarkup = () =>
-    navigator.clipboard.writeText(formatHtmlString(markup));
+  const modalRef = useRef();
+
+  useClickOutside(modalRef, toggleModal);
+
+  const [copiedLabel, copyMarkup] = useCopied(
+    formatHtmlString(markup),
+    "Copy embed code",
+  );
 
   return (
     <>
-      <Widget {...deferredOptions}></Widget>
-      <Modal className="shadow opacity-75">
-        <Modal.Header>
-          <Modal.Header.Title>Build embed code</Modal.Header.Title>
-          <Modal.Header.Close></Modal.Header.Close>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="d-flex flex-column gap-2">
-            {inputDefs.map(({ name, label = name, type }) =>
-              type === "checkbox" ? (
-                <FormCheck
-                  checked={deferredOptions[name]}
-                  onChange={onChange}
-                  name={name}
-                  type={type}
-                >
-                  {label}
-                </FormCheck>
-              ) : (
-                <FormControl
-                  className="d-flex align-items-center gap-2"
-                  value={deferredOptions[name]}
-                  onChange={onChange}
-                  name={name}
-                  type={type}
-                >
-                  {label}
-                </FormControl>
-              ),
-            )}
-            {/* <textarea ref={markupRef} value={markup} rows={3}></textarea> */}
+      <RemoteComponent
+        toolbar={
+          <div>
+            <button
+              className="btn btn-primary"
+              onClick={toggleModal}
+              type="button"
+            >
+              Launch editor
+            </button>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <button
-            className="btn btn-primary"
-            onClick={copyMarkup}
-            type="button"
-          >
-            Copy embed code
-          </button>
-          <button className="btn btn-secondary" type="button">
-            Close
-          </button>
-        </Modal.Footer>
-      </Modal>
+        }
+        url="https://irserver2.eku.edu/libraries/remote/r19-wrapper.cjs"
+        heading="Create embeddable widget"
+      >
+        <Widget {...deferredOptions}></Widget>
+        {isModalActive && (
+          <Modal className="shadow opacity-75" ref={modalRef}>
+            <Modal.Header>
+              <Modal.Header.Title>Build embed code</Modal.Header.Title>
+              <Modal.Header.Close onClick={toggleModal}></Modal.Header.Close>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="d-flex flex-column gap-2">
+                {inputDefs.map(({ name, label = name, type }) =>
+                  type === "checkbox" ? (
+                    <FormCheck
+                      checked={deferredOptions[name]}
+                      onChange={onChange}
+                      name={name}
+                      type={type}
+                    >
+                      {label}
+                    </FormCheck>
+                  ) : (
+                    <FormControl
+                      className="d-flex align-items-center gap-2"
+                      value={deferredOptions[name]}
+                      onChange={onChange}
+                      name={name}
+                      type={type}
+                    >
+                      {label}
+                    </FormControl>
+                  ),
+                )}
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <button
+                className="btn btn-primary"
+                onClick={copyMarkup}
+                type="button"
+              >
+                {copiedLabel}
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={toggleModal}
+                type="button"
+              >
+                Close
+              </button>
+            </Modal.Footer>
+          </Modal>
+        )}
+      </RemoteComponent>
     </>
   );
-}
-
-const FormControl = ({ className, children, type, ...rest }) => {
-  const id = useId();
-
-  const formLabel = (
-    <label className="form-label m-0" htmlFor={id}>
-      {children}
-    </label>
-  );
-
-  return (
-    <div className={className}>
-      {type !== "color" && formLabel}
-      <input
-        {...rest}
-        className={["form-control", type === "color" && "form-control-color"]
-          .filter(Boolean)
-          .join(" ")}
-        type={type}
-        id={id}
-      />
-      {type === "color" && formLabel}
-    </div>
-  );
-};
-
-const FormCheck = ({ className, children, ...rest }) => {
-  const id = useId();
-
-  return (
-    <div className={["form-check", className].filter(Boolean).join(" ")}>
-      <input {...rest} className="form-check-input" id={id} />
-      <label className="form-check-label" htmlFor={id}>
-        {children}
-      </label>
-    </div>
-  );
-};
-
-function formatHtmlString(html) {
-  let formatted = "";
-  let indent = "";
-  const tab = "  "; // 2-space indentation
-
-  // Split the string into individual opening, closing, and content blocks
-  html.split(/>\s*</).forEach((element) => {
-    if (element.match(/^\/\w/)) {
-      // If it's a closing tag, decrease the indentation first
-      indent = indent.substring(tab.length);
-    }
-
-    formatted += indent + "<" + element + ">\n";
-
-    if (
-      element.match(/^<?\w[^>]*[^\/]$/) &&
-      !element.startsWith("input") &&
-      !element.startsWith("img")
-    ) {
-      // If it's an opening tag, increase the indentation for the next line
-      indent += tab;
-    }
-  });
-
-  return formatted.substring(1, formatted.length - 2);
-}
-
-function copyToClipboard(element) {
-  // Select the text field
-  element.select();
-  element.setSelectionRange(0, 99999); // For mobile devices
-
-  // Copy the text inside the text field
-  navigator.clipboard.writeText(element.value);
 }

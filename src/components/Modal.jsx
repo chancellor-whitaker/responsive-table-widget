@@ -1,9 +1,10 @@
-import createProxyComponent from "./createProxyComponent.jsx";
+import createProxyComponent from "../createProxyComponent.jsx";
 
 export default function Modal({
   classNameAccessor = (a, b) => [a, b].filter(Boolean).join(" "),
   className,
   children,
+  ref,
 }) {
   return (
     <div
@@ -13,7 +14,10 @@ export default function Modal({
       role="dialog"
     >
       <div className="modal-dialog modal-sm modal-dialog-centered modal-dialog-scrollable">
-        <div className={classNameAccessor("modal-content", className)}>
+        <div
+          className={classNameAccessor("modal-content", className)}
+          ref={ref}
+        >
           {children}
         </div>
       </div>
