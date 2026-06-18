@@ -7,12 +7,16 @@ import { useClickOutside } from "./hooks/useClickOutside";
 import formatHtmlString from "./helpers/formatHtmlString";
 import Widget from "./widgets/accreditation/Widget";
 import FormControl from "./components/FormControl";
+import getRandomId from "./helpers/getRandomId";
 import FormCheck from "./components/FormCheck";
 import useCopied from "./hooks/useCopied";
 import Modal from "./components/Modal";
 
 // hover question mark to explain page
-// change "accreditation" verbiage
+// shadow dom in react?
+
+const instructions =
+  "Click Launch Editor to customize the widget. The preview updates automatically as you make changes. When you're finished, click Copy Embed Code and paste the generated code into your webpage.";
 
 export default function App() {
   const [isModalActive, setIsModalActive] = useState();
@@ -27,9 +31,11 @@ export default function App() {
     ),
   );
   // hover question mark to explain page
-  // change "accreditation" verbiage
-  // id={`ier-${uniqueId}`}
-  const markup = `<div id="accreditation-widget"></div><script src="https://chancellor-whitaker.github.io/responsive-table-widget/accreditation-widget.iife.js?v=1"></script><script>AccreditationWidget.mount("#accreditation-widget", ${JSON.stringify(mountOptions)});</script>`;
+  const randomId = getRandomId();
+
+  const widgetId = `ier-accreditation-${randomId}`;
+
+  const markup = `<div id=${widgetId}></div><script src="https://chancellor-whitaker.github.io/responsive-table-widget/accreditation-widget.iife.js?v=${randomId}"></script><script>AccreditationWidget.mount("#${widgetId}", ${JSON.stringify(mountOptions)});</script>`;
 
   const onChange = ({ target: { checked, value, type, name } }) =>
     setOptions((state) =>
@@ -56,6 +62,23 @@ export default function App() {
   return (
     <>
       <RemoteComponent
+        heading={
+          <div className="d-flex flex-wrap gap-2 align-items-center">
+            Create embeddable widget
+            <span className="d-flex my-tooltip" data-tooltip={instructions}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="bi bi-info-circle-fill"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                height={16}
+                width={16}
+              >
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
+              </svg>
+            </span>
+          </div>
+        }
         toolbar={
           <div>
             <button
@@ -63,12 +86,11 @@ export default function App() {
               onClick={toggleModal}
               type="button"
             >
-              Launch editor
+              Launch Editor
             </button>
           </div>
         }
         url="https://irserver2.eku.edu/libraries/remote/r19-wrapper.cjs"
-        heading="Create embeddable widget"
       >
         <Widget {...deferredOptions}></Widget>
         {isModalActive && (
