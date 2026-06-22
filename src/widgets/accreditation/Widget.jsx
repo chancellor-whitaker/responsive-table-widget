@@ -3,9 +3,9 @@
 import { useEffect, useState, Fragment } from "react";
 
 import countDecimalPlaces from "./lib/helpers/countDecimalPlaces";
-import "./widget.css";
+// import "./widget.css";
+import useReorderableItems from "../../hooks/useReorderableItems";
 import formatterPercent from "./lib/helpers/formatterPercent";
-// import useReorderableItems from "./lib/useReorderableItems";
 import formatterUSD from "./lib/helpers/formatterUSD";
 import kpiDescriptions from "./lib/kpiDescriptions";
 import defaultOptions from "./lib/defaultOptions";
@@ -25,13 +25,6 @@ const applyOrder = (items, order = [], getId) => {
 
     return aIndex - bIndex;
   });
-};
-
-const moveItem = (array, fromIndex, toIndex) => {
-  const copy = [...array];
-  const [item] = copy.splice(fromIndex, 1);
-  copy.splice(toIndex, 0, item);
-  return copy;
 };
 
 export default function Widget({
@@ -363,43 +356,31 @@ function Table({
   const orderedColumns = applyOrder(columns, columnOrder, "key");
   const orderedData = applyOrder(data, rowOrder, getRowId);
 
-  const [draggedColumnIndex, setDraggedColumnIndex] = useState(null);
-  const [draggedRowIndex, setDraggedRowIndex] = useState(null);
+  const columnDrag = useReorderableItems({
+    onOrderChange: (columnOrder) => {
+      onOrderChange?.({ columnOrder });
+    },
+    getId: (column) => column.key,
+    items: orderedColumns,
+    enabled: editable,
+  });
 
-  function handleColumnDrop(toIndex) {
-    if (draggedColumnIndex === null) return;
-
-    const nextColumns = moveItem(orderedColumns, draggedColumnIndex, toIndex);
-
-    onOrderChange?.({
-      columnOrder: nextColumns.map((column) => column.key),
-    });
-
-    setDraggedColumnIndex(null);
-  }
-
-  function handleRowDrop(toIndex) {
-    if (draggedRowIndex === null) return;
-
-    const nextRows = moveItem(orderedData, draggedRowIndex, toIndex);
-
-    onOrderChange?.({
-      rowOrder: nextRows.map(getRowId),
-    });
-
-    setDraggedRowIndex(null);
-  }
+  const rowDrag = useReorderableItems({
+    onOrderChange: (rowOrder) => {
+      onOrderChange?.({ rowOrder });
+    },
+    items: orderedData,
+    enabled: editable,
+    getId: getRowId,
+  });
 
   const headerRender = orderedColumns.map((column, colIndex) => (
     <th
+      {...columnDrag.getDragProps(colIndex)}
       style={{
         cursor: editable ? "grab" : undefined,
         textAlign: "center",
       }}
-      onDragStart={() => setDraggedColumnIndex(colIndex)}
-      onDragOver={(event) => event.preventDefault()}
-      onDrop={() => handleColumnDrop(colIndex)}
-      draggable={editable}
       key={column.key}
       scope="col"
     >
@@ -409,14 +390,11 @@ function Table({
 
   const bodyRender = orderedData.map((row, rowIndex) => (
     <tr
+      key={getRowId(row) ?? rowIndex}
+      {...rowDrag.getDragProps(rowIndex)}
       style={{
         cursor: editable ? "grab" : undefined,
       }}
-      onDragStart={() => setDraggedRowIndex(rowIndex)}
-      onDragOver={(event) => event.preventDefault()}
-      onDrop={() => handleRowDrop(rowIndex)}
-      key={getRowId(row) ?? rowIndex}
-      draggable={editable}
     >
       {orderedColumns.map((column, colIndex) => (
         <Fragment key={column.key}>

@@ -32,11 +32,17 @@ export default function App() {
     ...inputDefs.map(({ name }) => name),
     "rowOrder",
     "columnOrder",
+    "editable",
   ];
 
-  const mountOptions = Object.fromEntries(
-    Object.entries(options).filter(([name]) => mountOptionNames.includes(name)),
-  );
+  const mountOptions = {
+    ...Object.fromEntries(
+      Object.entries(options).filter(([name]) =>
+        mountOptionNames.includes(name),
+      ),
+    ),
+    editable: false,
+  };
   // hover question mark to explain page
   const randomId = getRandomId();
 
