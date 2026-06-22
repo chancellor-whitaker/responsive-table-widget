@@ -3,7 +3,7 @@
 import { useEffect, useState, Fragment } from "react";
 
 import countDecimalPlaces from "./lib/helpers/countDecimalPlaces";
-// import "./widget.css";
+import "./widget.css";
 import useReorderableItems from "../../hooks/useReorderableItems";
 import formatterPercent from "./lib/helpers/formatterPercent";
 import formatterUSD from "./lib/helpers/formatterUSD";

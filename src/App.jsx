@@ -72,6 +72,18 @@ export default function App() {
     "Copy embed code",
   );
 
+  const resetColumnOrder = () =>
+    setOptions((state) => ({
+      ...state,
+      columnOrder: [],
+    }));
+
+  const resetRowOrder = () =>
+    setOptions((state) => ({
+      ...state,
+      rowOrder: [],
+    }));
+
   return (
     <>
       <RemoteComponent
@@ -93,13 +105,29 @@ export default function App() {
           </div>
         }
         toolbar={
-          <div>
+          <div className="d-flex flex-wrap gap-2 justify-content-end">
             <button
               className="btn btn-primary"
               onClick={toggleModal}
               type="button"
             >
               Launch Editor
+            </button>
+            <button
+              disabled={options.columnOrder.length === 0}
+              className="btn btn-primary"
+              onClick={resetColumnOrder}
+              type="button"
+            >
+              Reset Column Order
+            </button>
+            <button
+              disabled={options.rowOrder.length === 0}
+              className="btn btn-primary"
+              onClick={resetRowOrder}
+              type="button"
+            >
+              Reset Row Order
             </button>
           </div>
         }
