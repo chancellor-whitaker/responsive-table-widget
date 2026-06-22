@@ -1,3 +1,5 @@
+/* src/widgets/accreditation/lib/inputDefs.js */
+
 export default [
   { label: "Title", name: "title", type: "text" },
   { label: "Primary color", name: "primaryColor", type: "color" },

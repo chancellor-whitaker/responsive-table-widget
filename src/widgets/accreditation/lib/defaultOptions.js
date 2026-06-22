@@ -1,3 +1,5 @@
+/* src/widgets/accreditation/lib/defaultOptions.js */
+
 export default {
   dataUrl:
     "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data",
@@ -11,8 +13,10 @@ export default {
   hoverRows: true,
   showNotes: true,
   transpose: true,
+  columnOrder: [],
   compact: true,
   maxHeight: "",
   refreshMs: 0,
+  rowOrder: [],
   title: "",
 };

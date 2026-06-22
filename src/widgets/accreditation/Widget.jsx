@@ -1,59 +1,43 @@
-/* src/widgets/example/Widget.jsx */
+/* src/widgets/accreditation/Widget.jsx */
 
 import { useEffect, useState, Fragment } from "react";
 
+import countDecimalPlaces from "./lib/helpers/countDecimalPlaces";
 import "./widget.css";
+import formatterPercent from "./lib/helpers/formatterPercent";
+// import useReorderableItems from "./lib/useReorderableItems";
+import formatterUSD from "./lib/helpers/formatterUSD";
+import kpiDescriptions from "./lib/kpiDescriptions";
 import defaultOptions from "./lib/defaultOptions";
+import getColumns from "./lib/helpers/getColumns";
+// import applyOrder from "./lib/helpers/applyOrder";
+import century from "./lib/helpers/century";
+import keyToLabel from "./lib/keyToLabel";
 
-const keyToLabel = { kpi: "Student Performance Indicator", p_title: "Program" };
+const applyOrder = (items, order = [], getId) => {
+  const idFn = typeof getId === "function" ? getId : (item) => item[getId];
 
-const today = new Date();
-const currentYear = today.getFullYear(); // e.g., 2026
-const century = Math.ceil(currentYear / 100);
+  const orderMap = new Map(order.map((id, index) => [id, index]));
 
-const getColumns = (rows, labels = {}) => {
-  return Object.keys(rows.length > 0 ? rows[0] : {}).map((key) => ({
-    label: key in labels ? labels[key] : key,
-    key,
-  }));
+  return [...items].sort((a, b) => {
+    const aIndex = orderMap.has(idFn(a)) ? orderMap.get(idFn(a)) : Infinity;
+    const bIndex = orderMap.has(idFn(b)) ? orderMap.get(idFn(b)) : Infinity;
+
+    return aIndex - bIndex;
+  });
 };
 
-function countDecimalPlaces(value) {
-  // Return 0 if the value is an integer
-  if (Math.floor(value) === value) return 0;
-
-  const str = value.toString();
-
-  // Handle scientific notation (e.g., 1e-7)
-  if (str.includes("e-")) {
-    return parseInt(str.split("e-")[1], 10);
-  }
-
-  // Handle standard decimal numbers
-  return str.includes(".") ? str.split(".")[1].length : 0;
-}
-
-const formatterUSD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-
-const formatterPercent = new Intl.NumberFormat("default", {
-  style: "percent",
-});
-
-const kpiDescriptions = {
-  "Degrees→years_to_grad": "Average Years to Complete the Degree",
-  "Degrees→Final_Hours": "Mean Hours - Graduating Class",
-  "Degrees→Final_GPA": "Mean GPA - Graduating Class",
-  "Grad Rates→_6yr_": "6 Year Graduation Rate",
-  "Retention Rates→retained": "Retention Rate",
-  "Degrees→degrees": "Degrees Awarded",
+const moveItem = (array, fromIndex, toIndex) => {
+  const copy = [...array];
+  const [item] = copy.splice(fromIndex, 1);
+  copy.splice(toIndex, 0, item);
+  return copy;
 };
 
 export default function Widget({
   primaryColor = defaultOptions.primaryColor,
   stickyHeader = defaultOptions.stickyHeader,
+  columnOrder = defaultOptions.columnOrder,
   stripedRows = defaultOptions.stripedRows,
   fontFamily = defaultOptions.fontFamily,
   notesMode = defaultOptions.notesMode,
@@ -63,10 +47,13 @@ export default function Widget({
   maxHeight = defaultOptions.maxHeight,
   refreshMs = defaultOptions.refreshMs,
   transpose = defaultOptions.transpose,
+  rowOrder = defaultOptions.rowOrder,
   dataUrl = defaultOptions.dataUrl,
   compact = defaultOptions.compact,
   theme = defaultOptions.theme,
   title = defaultOptions.title,
+  editable = false,
+  onOrderChange,
 }) {
   const widgetClassName = [
     "example-widget",
@@ -318,6 +305,11 @@ export default function Widget({
         }
         valueFormatter={valueFormatter}
         tableAccessor={tableAccessor}
+        onOrderChange={onOrderChange}
+        columnOrder={columnOrder}
+        transpose={transpose}
+        rowOrder={rowOrder}
+        editable={editable}
         columns={columns}
         data={tableRows}
         title={title}
@@ -355,11 +347,102 @@ function Table({
   ),
   valueFormatter = ({ value }) => value,
   tableAccessor = (obj) => obj,
+  transpose = false,
+  columnOrder = [],
+  editable = false,
   columns: cols,
+  rowOrder = [],
+  onOrderChange,
   title = "",
   data: rows,
 }) {
   const { columns, data } = tableAccessor({ columns: cols, data: rows });
+
+  const getRowId = (row) => (transpose ? row.kpi : row.p_title);
+
+  const orderedColumns = applyOrder(columns, columnOrder, "key");
+  const orderedData = applyOrder(data, rowOrder, getRowId);
+
+  const [draggedColumnIndex, setDraggedColumnIndex] = useState(null);
+  const [draggedRowIndex, setDraggedRowIndex] = useState(null);
+
+  function handleColumnDrop(toIndex) {
+    if (draggedColumnIndex === null) return;
+
+    const nextColumns = moveItem(orderedColumns, draggedColumnIndex, toIndex);
+
+    onOrderChange?.({
+      columnOrder: nextColumns.map((column) => column.key),
+    });
+
+    setDraggedColumnIndex(null);
+  }
+
+  function handleRowDrop(toIndex) {
+    if (draggedRowIndex === null) return;
+
+    const nextRows = moveItem(orderedData, draggedRowIndex, toIndex);
+
+    onOrderChange?.({
+      rowOrder: nextRows.map(getRowId),
+    });
+
+    setDraggedRowIndex(null);
+  }
+
+  const headerRender = orderedColumns.map((column, colIndex) => (
+    <th
+      style={{
+        cursor: editable ? "grab" : undefined,
+        textAlign: "center",
+      }}
+      onDragStart={() => setDraggedColumnIndex(colIndex)}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={() => handleColumnDrop(colIndex)}
+      draggable={editable}
+      key={column.key}
+      scope="col"
+    >
+      {column.label}
+    </th>
+  ));
+
+  const bodyRender = orderedData.map((row, rowIndex) => (
+    <tr
+      style={{
+        cursor: editable ? "grab" : undefined,
+      }}
+      onDragStart={() => setDraggedRowIndex(rowIndex)}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={() => handleRowDrop(rowIndex)}
+      key={getRowId(row) ?? rowIndex}
+      draggable={editable}
+    >
+      {orderedColumns.map((column, colIndex) => (
+        <Fragment key={column.key}>
+          {colIndex === 0 ? (
+            <td data-label={column.label}>
+              <p>
+                {valueFormatter({
+                  value: row[column.key],
+                  column,
+                  row,
+                })}
+              </p>
+            </td>
+          ) : (
+            <td style={{ textAlign: "center" }} data-label={column.label}>
+              {valueFormatter({
+                value: row[column.key],
+                column,
+                row,
+              })}
+            </td>
+          )}
+        </Fragment>
+      ))}
+    </tr>
+  ));
 
   return (
     <div className="page-content">
@@ -379,50 +462,9 @@ function Table({
               </p>
             </caption> */}
             <thead>
-              <tr>
-                {columns.map((column) => (
-                  <th
-                    style={{ textAlign: "center" }}
-                    key={column.key}
-                    scope="col"
-                  >
-                    {column.label}
-                  </th>
-                ))}
-              </tr>
+              <tr>{headerRender}</tr>
             </thead>
-            <tbody>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {columns.map((column, colIndex) => (
-                    <Fragment key={column.key}>
-                      {colIndex === 0 ? (
-                        <td data-label={column.label}>
-                          <p>
-                            {valueFormatter({
-                              value: row[column.key],
-                              column,
-                              row,
-                            })}
-                          </p>
-                        </td>
-                      ) : (
-                        <td
-                          style={{ textAlign: "center" }}
-                          data-label={column.label}
-                        >
-                          {valueFormatter({
-                            value: row[column.key],
-                            column,
-                            row,
-                          })}
-                        </td>
-                      )}
-                    </Fragment>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
+            <tbody>{bodyRender}</tbody>
           </table>
         </div>
         {below && below}

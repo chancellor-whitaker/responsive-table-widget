@@ -1,3 +1,5 @@
+/* src/App.jsx */
+
 import { useDeferredValue, useState, useRef } from "react";
 
 import defaultOptions from "./widgets/accreditation/lib/defaultOptions";
@@ -12,11 +14,12 @@ import FormCheck from "./components/FormCheck";
 import useCopied from "./hooks/useCopied";
 import Modal from "./components/Modal";
 
-// hover question mark to explain page
-// shadow dom in react?
+// drag rows around and columns around (change order)
+// give mechanism to reorder metrics (drag n drop order of metrics)
+// fix css issues (widget component pulls styles from main)
 
 const instructions =
-  "Click Launch Editor to customize the widget. The preview updates automatically as you make changes. When you're finished, click Copy Embed Code and paste the generated code into your webpage.";
+  "Click Launch Editor to customize the widget. The preview updates automatically as you make changes. You can also drag and drop rows and columns to rearrange them. When you're finished, click Copy Embed Code and paste the generated code into your webpage.";
 
 export default function App() {
   const [isModalActive, setIsModalActive] = useState();
@@ -25,10 +28,14 @@ export default function App() {
 
   const [options, setOptions] = useState(defaultOptions);
 
+  const mountOptionNames = [
+    ...inputDefs.map(({ name }) => name),
+    "rowOrder",
+    "columnOrder",
+  ];
+
   const mountOptions = Object.fromEntries(
-    Object.entries(options).filter(([n]) =>
-      inputDefs.find(({ name }) => name === n),
-    ),
+    Object.entries(options).filter(([name]) => mountOptionNames.includes(name)),
   );
   // hover question mark to explain page
   const randomId = getRandomId();
@@ -92,7 +99,16 @@ export default function App() {
         }
         url="https://irserver2.eku.edu/libraries/remote/r19-wrapper.cjs"
       >
-        <Widget {...deferredOptions}></Widget>
+        <Widget
+          {...deferredOptions}
+          onOrderChange={(nextOrder) =>
+            setOptions((state) => ({
+              ...state,
+              ...nextOrder,
+            }))
+          }
+          editable={true}
+        ></Widget>
         {isModalActive && (
           <Modal className="shadow" ref={modalRef}>
             <Modal.Header>
