@@ -3,14 +3,13 @@
 import { useEffect, useState, Fragment } from "react";
 
 import countDecimalPlaces from "./lib/helpers/countDecimalPlaces";
-import "./widget.css";
+// import "./widget.css";
 import useReorderableItems from "../../hooks/useReorderableItems";
 import formatterPercent from "./lib/helpers/formatterPercent";
 import formatterUSD from "./lib/helpers/formatterUSD";
 import kpiDescriptions from "./lib/kpiDescriptions";
 import defaultOptions from "./lib/defaultOptions";
 import getColumns from "./lib/helpers/getColumns";
-// import applyOrder from "./lib/helpers/applyOrder";
 import century from "./lib/helpers/century";
 import keyToLabel from "./lib/keyToLabel";
 
@@ -289,10 +288,10 @@ export default function Widget({
             notesMode === "collapsed" ? (
               <details>
                 <summary>Notes</summary>
-                <ul>{notesContent}</ul>
+                <ul className="accreditation-notes">{notesContent}</ul>
               </details>
             ) : (
-              <ul>{notesContent}</ul>
+              <ul className="accreditation-notes">{notesContent}</ul>
             )
           ) : null
         }

@@ -213,7 +213,7 @@ a:focus {
 }
 .editor ul:not([class]):not([type]) li::before {
   display: inline-block;
-  float: left;
+  /* float: left; */
   margin-left: -1.75rem;
   text-align: left;
   -webkit-transform: translateX(-50%);
@@ -251,7 +251,30 @@ ul {
 .editor > * {
   margin: 0;
 }
-/*! CSS Used fontfaces */
+
+.accreditation-notes {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  margin: 0.75rem 0 1.5rem 1.25rem !important;
+  padding: 0 !important;
+}
+
+.accreditation-notes li {
+  display: list-item !important;
+  margin: 0.5rem 0 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.accreditation-notes li::before {
+  content: none !important;
+  display: none !important;
+}
+
+details .accreditation-notes {
+  margin-top: 0.75rem !important;
+}
+
 @font-face {
   font-family: "Fira Sans";
   font-style: italic;
