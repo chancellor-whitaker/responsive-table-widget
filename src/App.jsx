@@ -10,6 +10,7 @@ import formatHtmlString from "./helpers/formatHtmlString";
 import ShadowPreview from "./components/ShadowPreview";
 // import Widget from "./widgets/accreditation/Widget";
 import FormControl from "./components/FormControl";
+import shallowEqual from "./helpers/shallowEqual";
 import getRandomId from "./helpers/getRandomId";
 import FormCheck from "./components/FormCheck";
 import widget from "./widgets/accreditation";
@@ -24,6 +25,9 @@ const Widget = widget.component;
 
 const defaultInstructions =
   "Click Launch Editor to customize the widget. The preview updates automatically as you make changes. You can also drag and drop rows and columns to rearrange them. When you're finished, click Copy Embed Code and paste the generated code into your webpage.";
+
+const arraysAreEqual = (a, b) =>
+  a.length === b.length && a.every((val, index) => val === b[index]);
 
 const RemoteHeading = ({
   title = "Create embeddable widget",
@@ -48,12 +52,25 @@ const RemoteHeading = ({
   );
 };
 
+const simplifyObject = (object) =>
+  Object.fromEntries(
+    Object.entries(object).filter(
+      ([, val]) =>
+        val === null || (typeof val !== "object" && typeof val !== "function"),
+    ),
+  );
+
 export default function App() {
   const [isModalActive, setIsModalActive] = useState();
 
   const toggleModal = () => setIsModalActive((b) => !b);
 
   const [options, setOptions] = useState(defaultOptions);
+
+  const resetDisabled = shallowEqual(
+    simplifyObject(options),
+    simplifyObject(defaultOptions),
+  );
 
   const mountOptionNames = [
     ...inputDefs.map(({ name }) => name),
@@ -99,17 +116,21 @@ export default function App() {
     "Copy embed code",
   );
 
-  const resetColumnOrder = () =>
+  const resetOption = (key, value) =>
     setOptions((state) => ({
       ...state,
-      columnOrder: [],
+      [key]: key in defaultOptions ? defaultOptions[key] : value,
     }));
 
-  const resetRowOrder = () =>
-    setOptions((state) => ({
-      ...state,
-      rowOrder: [],
-    }));
+  const defaultColOrder =
+    "columnOrder" in defaultOptions ? defaultOptions.columnOrder : [];
+
+  const defaultRowOrder =
+    "rowOrder" in defaultOptions ? defaultOptions.rowOrder : [];
+
+  const resetColumnOrder = () => resetOption("columnOrder", defaultColOrder);
+
+  const resetRowOrder = () => resetOption("rowOrder", defaultRowOrder);
 
   const toolbar = (
     <div className="d-flex flex-wrap gap-2 justify-content-end">
@@ -117,7 +138,7 @@ export default function App() {
         Launch Editor
       </button>
       <button
-        disabled={options.columnOrder.length === 0}
+        disabled={arraysAreEqual(options.columnOrder, defaultColOrder)}
         className="btn btn-primary"
         onClick={resetColumnOrder}
         type="button"
@@ -125,7 +146,7 @@ export default function App() {
         Reset Column Order
       </button>
       <button
-        disabled={options.rowOrder.length === 0}
+        disabled={arraysAreEqual(options.rowOrder, defaultRowOrder)}
         className="btn btn-primary"
         onClick={resetRowOrder}
         type="button"
@@ -195,11 +216,12 @@ export default function App() {
                 {copiedLabel}
               </button>
               <button
-                className="btn btn-secondary"
-                onClick={toggleModal}
+                onClick={() => setOptions(defaultOptions)}
+                className="btn btn-primary"
+                disabled={resetDisabled}
                 type="button"
               >
-                Close
+                Reset
               </button>
             </Modal.Footer>
           </Modal>
