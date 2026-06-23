@@ -75,7 +75,7 @@ export default function App() {
 
   const widgetId = `ier-accreditation-${randomId}`;
 
-  const markup = `<div id=${widgetId}></div><script src="https://chancellor-whitaker.github.io/responsive-table-widget/accreditation-widget.iife.js?v=${randomId}"></script><script>AccreditationWidget.mount("#${widgetId}", ${JSON.stringify(mountOptions)});</script>`;
+  const markup = `<div id=${widgetId}></div><script src="https://irserver2.eku.edu/libraries/remote/accreditation-widget.iife.js?v=${randomId}"></script><script>AccreditationWidget.mount("#${widgetId}", ${JSON.stringify(mountOptions)});</script>`;
 
   const onChange = ({ target: { checked, value, type, name } }) =>
     setOptions((state) =>

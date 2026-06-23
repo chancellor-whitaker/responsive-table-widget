@@ -55,6 +55,7 @@ export default function Widget({
     hoverRows ? "example-widget--hover" : "",
     stickyHeader ? "example-widget--sticky-header" : "",
     maxHeight ? "example-widget--scrollable" : "",
+    editable ? "example-widget--editable" : "",
   ]
     .filter(Boolean)
     .join(" ");
