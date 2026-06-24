@@ -32,8 +32,8 @@ const arraysAreEqual = (a, b) =>
 // ATMAE Accreditation
 
 const RemoteHeading = ({
-  title = "Create embeddable widget",
   instructions = defaultInstructions,
+  title = "ATMAE Accreditation",
 }) => {
   return (
     <div className="d-flex flex-wrap gap-2 align-items-center">
@@ -68,11 +68,6 @@ export default function App() {
   const toggleModal = () => setIsModalActive((b) => !b);
 
   const [options, setOptions] = useState(defaultOptions);
-
-  const resetDisabled = shallowEqual(
-    simplifyObject(options),
-    simplifyObject(defaultOptions),
-  );
 
   const mountOptionNames = [
     ...inputDefs.map(({ name }) => name),
@@ -118,28 +113,33 @@ export default function App() {
     "Copy embed code",
   );
 
-  const resetOption = (key, value) =>
-    setOptions((state) => ({
-      ...state,
-      [key]: key in defaultOptions ? defaultOptions[key] : value,
-    }));
-
   const defaultColOrder =
     "columnOrder" in defaultOptions ? defaultOptions.columnOrder : [];
 
   const defaultRowOrder =
     "rowOrder" in defaultOptions ? defaultOptions.rowOrder : [];
 
-  const resetColumnOrder = () => resetOption("columnOrder", defaultColOrder);
+  // const resetOption = (key, value) =>
+  //   setOptions((state) => ({
+  //     ...state,
+  //     [key]: key in defaultOptions ? defaultOptions[key] : value,
+  //   }));
 
-  const resetRowOrder = () => resetOption("rowOrder", defaultRowOrder);
+  // const resetColumnOrder = () => resetOption("columnOrder", defaultColOrder);
+
+  // const resetRowOrder = () => resetOption("rowOrder", defaultRowOrder);
+
+  const resetDisabled =
+    shallowEqual(simplifyObject(options), simplifyObject(defaultOptions)) &&
+    arraysAreEqual(options.columnOrder, defaultColOrder) &&
+    arraysAreEqual(options.rowOrder, defaultRowOrder);
 
   const toolbar = (
     <div className="d-flex flex-wrap gap-2 justify-content-end">
-      <button className="btn btn-primary" onClick={toggleModal} type="button">
+      <button className="btn btn-secondary" onClick={toggleModal} type="button">
         Launch Editor
       </button>
-      <button
+      {/* <button
         disabled={arraysAreEqual(options.columnOrder, defaultColOrder)}
         className="btn btn-primary"
         onClick={resetColumnOrder}
@@ -154,7 +154,7 @@ export default function App() {
         type="button"
       >
         Reset Row Order
-      </button>
+      </button> */}
     </div>
   );
 
