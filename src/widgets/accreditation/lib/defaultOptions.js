@@ -4,7 +4,7 @@ export default {
   dataUrl:
     "https://irserver2.eku.edu/Apps/DataPage/PROD/Accreditation/ATMAE/data",
   fontFamily: "Fira Sans, system-ui, sans-serif",
-  primaryColor: "rgb(134, 31, 65)",
+  primaryColor: "#861f41",
   notesMode: "expanded",
   linkColor: "#009681",
   stickyHeader: false,

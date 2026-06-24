@@ -29,6 +29,8 @@ const defaultInstructions =
 const arraysAreEqual = (a, b) =>
   a.length === b.length && a.every((val, index) => val === b[index]);
 
+// ATMAE Accreditation
+
 const RemoteHeading = ({
   title = "Create embeddable widget",
   instructions = defaultInstructions,

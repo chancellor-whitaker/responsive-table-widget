@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Fragment } from "react";
 
+import getContrastTextColor from "./lib/helpers/getContrastTextColor";
 import countDecimalPlaces from "./lib/helpers/countDecimalPlaces";
 // import "./widget.css";
 import useReorderableItems from "../../hooks/useReorderableItems";
@@ -60,7 +61,10 @@ export default function Widget({
     .filter(Boolean)
     .join(" ");
 
+  const headerTextColor = getContrastTextColor(primaryColor);
+
   const widgetStyle = {
+    "--example-header-text-color": headerTextColor,
     "--example-primary-color": primaryColor,
     "--example-font-family": fontFamily,
     "--example-link-color": linkColor,

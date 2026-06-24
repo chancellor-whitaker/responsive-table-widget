@@ -25,8 +25,8 @@
 }
 
 .example-widget .page-content table:not([class]) th {
-  background-color: var(--example-primary-color, rgb(134, 31, 65));
-  border-color: var(--example-primary-color, rgb(134, 31, 65));
+  background-color: var(--example-primary-color, #861f41);
+  border-color: var(--example-primary-color, #861f41);
 }
 
 .example-widget--compact table th,
@@ -149,13 +149,13 @@ a:focus {
   padding-top: 0.75rem;
 }
 .page-content table:not([class]) tr:last-child > th {
-  border-bottom: 1px solid var(--example-primary-color, rgb(134, 31, 65));
+  border-bottom: 1px solid var(--example-primary-color, #861f41);
 }
 .page-content table:not([class]) th {
-  background-color: var(--example-primary-color, rgb(134, 31, 65));
-  border: 1px solid var(--example-primary-color, rgb(134, 31, 65));
+  background-color: var(--example-primary-color, #861f41);
+  border: 1px solid var(--example-primary-color, #861f41);
   border-bottom: 0;
-  color: white;
+  color: var(--example-header-text-color, white);
   font-weight: 500;
   padding: 0.75rem;
   text-align: left;
